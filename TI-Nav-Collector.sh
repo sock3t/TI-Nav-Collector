@@ -9,10 +9,11 @@ _playerdata="${_the_isle_folder}/TheIsle/Saved/PlayerData/"
 
 while true
 do
-	#inotifywait -qq "${_playerdata}"
-	#sleep .2
-	./create_bulk_json.sh
-	sleep 10
+	inotifywait -qq "${_playerdata}"
+	sleep .2
+	./TINC-send.sh
+	# uncomment this line for testing - comment the two lines above TINC-send.sh
+	#sleep 10
 	echo "waiting for next run ..."
 	echo
 done

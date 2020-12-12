@@ -56,7 +56,7 @@ else
 	_HerdID=$(jq -j '.TargetingTeamId' "${_userjson}")
 
 	# write json file for player
-	jo -- -s SteamID="${_SteamID}" -s -s UpdateEpoch="${_UpdateEpoch}" -s DinoSpecies="${_DinoSpecies}" -s Coordinates="${_Coordinates}" -s HerdID="${_HerdID}" > ./IDs/${_SteamID}.json
+	jo -- -s SteamID="${_SteamID}" -s UpdateEpoch="${_UpdateEpoch}" -s DinoSpecies="${_DinoSpecies}" -s Coordinates="${_Coordinates}" -s HerdID="${_HerdID}" > ./IDs/${_SteamID}.json
 fi
 
 echo -n ${_Coordinates} > ./IDs/${_SteamID}.lastcoord

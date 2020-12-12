@@ -7,8 +7,8 @@ _UpdateEpoch=$(date +%s%N | cut -b1-13)
 
 # Supported The Isle Server versions
 _supported_versions="0.5.19.27 0.5.19.28 0.6.22.12"
-# folder of your The Isle server
-_the_isle_server_folder="/mnt/c/SteamCMD/steamapps/common/The Isle Dedicated Server"
+# get folder of The Isle server from config file:
+. ./TI-Nav-Collector.conf
 
 # the "Saved" folder
 _server_saved_folder="${_the_isle_server_folder}/TheIsle/Saved"
@@ -28,7 +28,7 @@ _server_log_file="${_server_log_folder}/TheIsle.log"
 
 # curl stuff
 _curl="curl -o curl.api_response -s -S --stderr curl.err -H \\\"Content-Type: application/json\\\" "
-_URL="https://tinav.sengel.org/api-bulk.php"
+_URL="https://ti-nav.de/api-bulk.php"
 
 # some of these might fail / return empty on servers which have a high uptime (the TI server, not the OS). This is because the server.log files will be rotated and the lines I am gepping for only appear once during server start. So I might end up asking these from a config file - should be not much of a pain as server IP and name are unlikly to change frequently.
 
@@ -76,7 +76,7 @@ _online_count=$(echo "${_OnlinePlayers}" | wc -l)
 if [[ ! -d "./IDs" ]]; then mkdir -p ./IDs; fi
 
 # now create TI-Nav compatible json file for each player
-echo "${_OnlinePlayers}" | egrep -v "^$" | parallel --joblog ./joblog "./create_players_jsons.sh {} ${_UpdateEpoch}"
+echo "${_OnlinePlayers}" | egrep -v "^$" | parallel --joblog ./joblog "./TINC-player.sh {} ${_UpdateEpoch}"
 
 # now send the bulk update
 _Servers_json="$(jo -- -s ServerID="${_ServerID}" -s ServerName="${_ServerName}" -s ServerMap="${_ServerMap}")"
