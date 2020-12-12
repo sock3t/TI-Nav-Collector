@@ -28,7 +28,7 @@ _lat=${_x:0:-3}
 _Y=$(jq -j '.Y' "${_userjson}")
 _y=${_Y%%.*}
 _long=${_y:0:-3}
-#_Coordinates="${_long},${_lat}"
+_Coordinates="${_long},${_lat}"
 # for testing we can randomly generate coordinates (just comment _Coordinates variable above):
 if [[ -z "$_Coordinates" ]] 
 then
