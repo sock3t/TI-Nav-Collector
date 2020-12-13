@@ -21,6 +21,9 @@ fi
 ## prepare JSON according to TI-Nav API
 ###########
 
+# get Steam ID from player json
+_SteamID="$(jq -j '.SteamId' "${_userjson}")"
+
 #(location code such as -100,50) - the json file has the coordinated with proper sign, vulnona does not support minute precision today so the first characters in front of the period are sufficient
 _X=$(jq -j '.X' "${_userjson}")
 _x=${_X%%.*}
@@ -51,7 +54,6 @@ then
 		exit 2
 	fi
 else
-	_SteamID="$(jq -j '.SteamId' "${_userjson}")"
 	_DinoSpecies=$(jq -j '.Class' "${_userjson}")
 	_HerdID=$(jq -j '.TargetingTeamId' "${_userjson}")
 
