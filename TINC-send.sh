@@ -79,19 +79,21 @@ if [[ ! -d "./IDs" ]]; then mkdir -p ./IDs; fi
 # now create TI-Nav compatible json file for each player
 echo "${_OnlinePlayers}" | egrep -v "^$" | parallel --joblog ./joblog "./TINC-player.sh {} ${_UpdateEpoch}"
 
-# now send the bulk update
-_Servers_json="$(jo -- -s ServerID="${_ServerID}" -s ServerName="${_ServerName}" -s ServerMap="${_ServerMap}")"
-for _admin in ${_ServerAdmins}
-do
-	_Admins_json+=("$(jo -- -s SteamID="${_admin}")")
-done
-
-#jo -p "Servers=$(jo -a "$(echo ${_Servers_json})")" "Admins=$(jo -a "$(echo ${_Admins_json})")" "Players=$(jo -a $(cat ./IDs/*.json))"
-jo "Servers=$(jo -a "$(echo -n ${_Servers_json})")" "Admins=$(jo -a $(echo -n ${_Admins_json[@]}))" "Players=$(jo -a $(cat ./IDs/*.json))" > bulk.json
-
-# send the json to TI-Nav
-eval echo ${_curl} -d @./bulk.json \\\"${_URL}\\\" | bash
-
+# send the bulk update only if we have any player json - there might be players on the server but no one moved.
+if [[ ls IDs/*.json &> /dev/null ]]
+then
+	_Servers_json="$(jo -- -s ServerID="${_ServerID}" -s ServerName="${_ServerName}" -s ServerMap="${_ServerMap}")"
+	for _admin in ${_ServerAdmins}
+	do
+		_Admins_json+=("$(jo -- -s SteamID="${_admin}")")
+	done
+	
+	#jo -p "Servers=$(jo -a "$(echo ${_Servers_json})")" "Admins=$(jo -a "$(echo ${_Admins_json})")" "Players=$(jo -a $(cat ./IDs/*.json))"
+	jo "Servers=$(jo -a "$(echo -n ${_Servers_json})")" "Admins=$(jo -a $(echo -n ${_Admins_json[@]}))" "Players=$(jo -a $(cat ./IDs/*.json))" > bulk.json
+	
+	# send the json to TI-Nav
+	eval echo ${_curl} -d @./bulk.json \\\"${_URL}\\\" | bash
+fi
 # reporting
 _update_count=$(awk '$7==0' ./joblog | wc -l)
 _no_change_count=$(awk '$7==2' ./joblog | wc -l)

@@ -50,15 +50,14 @@ then
 	if [[ ${_ret} -eq 0 ]]
 	then
 		# remove players json so it will not be included in the next update
-		rm ./IDs/${_SteamID}.json
+		rm ./IDs/${_SteamID}.json &> /dev/null
 		exit 2
 	fi
-else
-	_DinoSpecies=$(jq -j '.Class' "${_userjson}")
-	_HerdID=$(jq -j '.TargetingTeamId' "${_userjson}")
-
-	# write json file for player
-	jo -- -s SteamID="${_SteamID}" -s UpdateEpoch="${_UpdateEpoch}" -s DinoSpecies="${_DinoSpecies}" -s Coordinates="${_Coordinates}" -s HerdID="${_HerdID}" > ./IDs/${_SteamID}.json
 fi
+_DinoSpecies=$(jq -j '.Class' "${_userjson}")
+_HerdID=$(jq -j '.TargetingTeamId' "${_userjson}")
+
+# write json file for player
+jo -- -s SteamID="${_SteamID}" -s UpdateEpoch="${_UpdateEpoch}" -s DinoSpecies="${_DinoSpecies}" -s Coordinates="${_Coordinates}" -s HerdID="${_HerdID}" > ./IDs/${_SteamID}.json
 
 echo -n ${_Coordinates} > ./IDs/${_SteamID}.lastcoord
