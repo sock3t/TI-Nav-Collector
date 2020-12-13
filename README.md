@@ -1,7 +1,7 @@
 # TI-Nav-Collector
 
 **Note:**
-_This tool is not yet publicly available. If you are interested in providing map / navigation functionality to your The Isle server then please introduce yourself in [Discussions](https://github.com/sock3t/TI-Nav-Collector/discussions)_
+_This tool is not yet public available. If you are interested in providing map / navigation functionality to your The Isle server then please introduce yourself in [Discussion's Join ALPHA Testing Category](https://github.com/sock3t/TI-Nav-Collector/discussions?discussions_q=category%3A%22Join+ALPHA+Testing%22)_
 
 Collector script that pulls player data from a The Isle server and sends it to [TI-Nav](https://ti-nav.de)
 This will allow any player on that TI server to track her/his own postion on a map.
