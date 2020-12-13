@@ -7,6 +7,7 @@ _UpdateEpoch=$(date +%s%N | cut -b1-13)
 
 # Supported The Isle Server versions
 _supported_versions="0.5.19.27 0.5.19.28 0.6.22.12"
+
 # get folder of The Isle server from config file:
 . ./TI-Nav-Collector.conf
 
