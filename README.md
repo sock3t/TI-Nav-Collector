@@ -1,5 +1,5 @@
-# TI-Nav-Connector
-Connector script to pull player data from a The Isle server and send it to the TI-Nav API
+# TI-Nav-Collector
+Collector script to pull player data from a The Isle server and send it to the TI-Nav API
 
 # Install:
 * Enable WSL & install Debian
