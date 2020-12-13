@@ -1,5 +1,16 @@
 # TI-Nav-Collector
-Collector script to pull player data from a The Isle server and send it to the TI-Nav API
+
+**Note:**
+_This tool is not yet publicly available. If you are interested in providing map / navigation functionality to your The Isle server then please introduce yourself in "Discussions"_
+
+Collector script that pulls player data from a The Isle server and sends it to [TI-Nav](https://ti-nav.de)
+This will allow any player on that TI server to track her/his own postion on a map.
+[TI-Nav](https://ti-nav.de) also allows players to share their position with other players.
+
+This script is based on bash and a set of GNU tools. So a linux environment will be required to run it on a windows OS based system.
+Cygwin might work, but I have not tested it.
+Windows Subsystem for Linux (WSL) is rather new so I provide guidance how to install it below.
+
 
 # Install:
 * Enable WSL & install Debian
@@ -27,3 +38,5 @@ Collector script to pull player data from a The Isle server and send it to the T
   * adjust the config parameter in `TI-Nav-Collector.conf` accordingly
 * Run TI-Nav-Collector
   * `./TI-Nav-Collector.sh`
+  * will only execute if there are players online on the server
+  * executes every ~10 seconds
