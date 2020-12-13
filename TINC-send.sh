@@ -80,7 +80,7 @@ if [[ ! -d "./IDs" ]]; then mkdir -p ./IDs; fi
 echo "${_OnlinePlayers}" | egrep -v "^$" | parallel --joblog ./joblog "./TINC-player.sh {} ${_UpdateEpoch}"
 
 # send the bulk update only if we have any player json - there might be players on the server but no one moved.
-if [[ ls IDs/*.json &> /dev/null ]]
+if ls ./IDs/*.json &> /dev/null
 then
 	_Servers_json="$(jo -- -s ServerID="${_ServerID}" -s ServerName="${_ServerName}" -s ServerMap="${_ServerMap}")"
 	for _admin in ${_ServerAdmins}
