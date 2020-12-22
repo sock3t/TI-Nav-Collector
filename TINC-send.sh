@@ -71,7 +71,7 @@ _OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-e
 # alternatively we can just search all json files for testing
 #_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json')"
 
-_online_count=$(echo "${_OnlinePlayers}" | wc -l)
+_online_count=$(echo -n "${_OnlinePlayers}" | wc -l)
 
 # create IDs folder if needed
 if [[ ! -d "./IDs" ]]; then mkdir -p ./IDs; fi
