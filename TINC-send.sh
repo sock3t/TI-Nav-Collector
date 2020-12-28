@@ -31,17 +31,9 @@ _server_log_file="${_server_log_folder}/TheIsle.log"
 _curl="curl -o curl.api_response -s -S --stderr curl.err -H \\\"Content-Type: application/json\\\" "
 _URL="https://ti-nav.de/api-bulk.php"
 
-# some of these might fail / return empty on servers which have a high uptime (the TI server, not the OS). This is because the server.log files will be rotated and the lines I am gepping for only appear once during server start. So I might end up asking these from a config file - should be not much of a pain as server IP and name are unlikly to change frequently.
+# some of the following checks might fail / return empty on servers which have a high uptime (the TI server, not the OS). This is because the server.log files will be rotated and the lines I am gepping for only appear once during server start. So I might end up asking these from a config file - should be not much of a pain as server name, version & map are unlikly to change frequently.
 
-# get TI server STEAM IP
-_server_ip=$(egrep "SteamP2P" "${_server_log_file}" | tail -n 1 | cut -d']' -f 3 | cut -d' ' -f 7 | tr -dc "[[:print:]]")
-_ServerID=${_server_ip/:/_}
-# get TI server name
-_ServerName=$(awk -F "=" '/ServerName/ {print $2}' "${_server_game_ini}" | tr -dc "[[:print:]]")
-# get Server Admins SteamdIDs
-_ServerAdmins=$(awk -F "=" '/AdminsSteamIDs/ {print $2}' "${_server_game_ini}" | tr -d '\r')
-
-# get TI server version
+# check whether TI server runs a supported version - TI devs need to put this somewhere else, log files will rotate!
 _ServerVersion=$(egrep "ProjectVersion" "${_server_log_file}" | tail -n 1 | cut -d']' -f 3 | cut -d' ' -f 5 | tr -dc "[[:print:]]")
 for _version in ${_supported_versions}
 do
@@ -57,21 +49,31 @@ then
 	exit 1
 fi
 
-# get current running map the log file has some nasty DOS style characters so we need to strip these off before further processing this value:
+# get TI server STEAM IP - this changes every time the TI server is restarted. This is the hook to resend all player's json files every once in a while. 
+# ! The log file has some nasty DOS style characters so we need to strip these off before further processing this value:
+_server_ip=$(egrep "SteamP2P" "${_server_log_file}" | tail -n 1 | cut -d']' -f 3 | cut -d' ' -f 7 | tr -dc "[[:print:]]")
+_ServerID=${_server_ip/:/_}
+
+# get current running map. This is useless for atm, becasue there is only Isla_Spiro. But there might be other maps again in the near future. Again the TI devs should expose the currently running map somwhere else because log files are heavy to crawl and will rotate soone or later. An API or rcon would make much sense here.
 _currentmap=$(egrep "LoadMap" "${_server_log_file}" | tail -n 1 | cut -d'(' -f 2 | tr -d ")" | tr -dc "[[:print:]]")
 _ServerMap=${_currentmap##*/}
 
-# how many player do we have to update @ vulnona?
+# get TI server name
+_ServerName=$(awk -F "=" '/ServerName/ {print $2}' "${_server_game_ini}" | tr -dc "[[:print:]]")
+
+# get Server Admins SteamdIDs
+_ServerAdmins=$(awk -F "=" '/AdminsSteamIDs/ {print $2}' "${_server_game_ini}" | tr -d '\r')
+
+# set up counters for basic stats
 _online_count=0
 _update_count=0
 _no_change_count=0
 
 # we find players who are currently online by checking which jsons have been modified wihtin then last 10 secs - TI server writes a json file for each player currently online every 10 secs:
 _OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json' -mmin 0.17)"
-# alternatively we can just search all json files for testing
-#_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json')"
 
-_online_count=$(echo -n "${_OnlinePlayers}" | wc -l)
+# wc -l does not work if there is one singel player, so we need to grep for lines but not newlines
+_online_count=$(echo -n "${_OnlinePlayers}" | egrep -c '^')
 
 # create IDs folder if needed
 if [[ ! -d "./IDs" ]]; then mkdir -p ./IDs; fi

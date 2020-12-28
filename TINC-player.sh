@@ -21,7 +21,7 @@ fi
 ## prepare JSON according to TI-Nav API
 ###########
 
-# get Steam ID from player json
+# get Steam ID from player json - player json is named by steamID already but this might change in future, so we stick with this.
 _SteamID="$(jq -j '.SteamId' "${_userjson}")"
 
 #(location code such as -100,50) - the json file has the coordinated with proper sign, vulnona does not support minute precision today so the first characters in front of the period are sufficient
@@ -39,13 +39,15 @@ then
 	_long=$(( $RANDOM % 800 ))
 	_Coordinates="-${_long},-${_lat}"
 fi
+_YW=$(jq -j '.Yaw' "${_userjson}")
+_Yaw=${_YW%%.*}
 
 #########################
 
 # check whether we need to send an update - did the coordinates change?
 if [[ -s "./IDs/${_SteamID}.lastcoord" ]]
 then
-	egrep -q -- "${_Coordinates}" ./IDs/${_SteamID}.lastcoord
+	egrep -q -- "${_Coordinates};${_Yaw}" ./IDs/${_SteamID}.lastcoord
 	_ret=$?
 	if [[ ${_ret} -eq 0 ]]
 	then
@@ -58,6 +60,6 @@ _DinoSpecies=$(jq -j '.Class' "${_userjson}")
 _HerdID=$(jq -j '.TargetingTeamId' "${_userjson}")
 
 # write json file for player
-jo -- -s SteamID="${_SteamID}" -s UpdateEpoch="${_UpdateEpoch}" -s DinoSpecies="${_DinoSpecies}" -s Coordinates="${_Coordinates}" -s HerdID="${_HerdID}" > ./IDs/${_SteamID}.json
+jo -- -s SteamID="${_SteamID}" -s UpdateEpoch="${_UpdateEpoch}" -s DinoSpecies="${_DinoSpecies}" -s Coordinates="${_Coordinates}" -s Yaw="${_Yaw}" -s HerdID="${_HerdID}" > ./IDs/${_SteamID}.json
 
-echo -n ${_Coordinates} > ./IDs/${_SteamID}.lastcoord
+echo -n "${_Coordinates};${_Yaw}" > ./IDs/${_SteamID}.lastcoord
