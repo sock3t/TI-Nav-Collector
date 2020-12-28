@@ -29,7 +29,7 @@ _server_log_file="${_server_log_folder}/TheIsle.log"
 
 # curl stuff
 _curl="curl -o curl.api_response -s -S --stderr curl.err -H \\\"Content-Type: application/json\\\" "
-_URL="https://ti-nav.de/api-bulk.php"
+_URL="https://ti-nav.net/api-bulk.php"
 
 # some of the following checks might fail / return empty on servers which have a high uptime (the TI server, not the OS). This is because the server.log files will be rotated and the lines I am gepping for only appear once during server start. So I might end up asking these from a config file - should be not much of a pain as server name, version & map are unlikly to change frequently.
 
