@@ -63,7 +63,7 @@ _online_count=0
 _update_count=0
 _no_change_count=0
 
-if [[ ${_updateAll} -eq "true"  ]]
+if [[ "${_updateAll}" = "true"  ]]
 then
 	# list all player json files for full sync
 	_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json')"

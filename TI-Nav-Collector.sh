@@ -88,9 +88,9 @@ do
 		echo -n "Log rotation detected... "
 		date
 		echo "Next update will sync all known players to TI-Nav"
-		./TINC-send.sh "${_ServerID}" "${_ServerMap}" "${_server_game_ini}" "${_server_playerdata_folder}" true
+		./TINC-send.sh "${_ServerID}" "${_ServerMap}" "${_server_game_ini}" "${_server_playerdata_folder}" "true"
 	else
-		./TINC-send.sh "${_ServerID}" "${_ServerMap}" "${_server_game_ini}" "${_server_playerdata_folder}" false
+		./TINC-send.sh "${_ServerID}" "${_ServerMap}" "${_server_game_ini}" "${_server_playerdata_folder}" "false"
 	fi
 	echo "waiting for next run ..."
 	echo
