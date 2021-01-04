@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # parameters:
-# ${_ServerID} ${_ServerMap} ${_server_game_ini} ${_server_playerdata_folder}
+# ${_ServerID} ${_ServerMap} ${_server_game_ini} ${_server_playerdata_folder} [true|false]
 
 if [[ -z "$1" ]] 
 then
@@ -50,7 +50,7 @@ _UpdateEpoch=$(date +%s%N | cut -b1-13)
 
 # curl stuff
 _curl="curl -o curl.api_response -s -S --stderr curl.err -H \\\"Content-Type: application/json\\\" "
-_URL="https://ti-nav.net/api-bulk.php"
+_URL="https://ti-nav.net/apis/api-bulk.php"
 
 # get TI server name
 _ServerName=$(awk -F "=" '/ServerName/ {print $2}' "${_server_game_ini}" | tr -dc "[[:print:]]")
@@ -63,11 +63,12 @@ _online_count=0
 _update_count=0
 _no_change_count=0
 
-# we find players who are currently online by checking which jsons have been modified wihtin then last 10 secs - TI server writes a json file for each player currently online every 10 secs:
 if [[ ${_updateAll} -eq "true"  ]]
 then
+	# list all player json files for full sync
 	_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json')"
 else
+	# find players who are currently online by checking which jsons have been modified wihtin then last 10 secs - TI server writes a json file for each player currently online every 10 secs:
 	_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json' -mmin 0.17)"
 fi
 
@@ -78,7 +79,7 @@ _online_count=$(echo -n "${_OnlinePlayers}" | egrep -c '^')
 if [[ ! -d "./IDs" ]]; then mkdir -p ./IDs; fi
 
 # now create TI-Nav compatible json file for each player
-echo "${_OnlinePlayers}" | egrep -v "^$" | parallel --joblog ./joblog "./TINC-player.sh {} ${_UpdateEpoch}"
+echo "${_OnlinePlayers}" | egrep -v "^$" | parallel -j 6 --joblog ./joblog "./TINC-player.sh {} ${_UpdateEpoch}"
 
 # send the bulk update only if we have any player json - there might be players on the server but no one moved.
 if ls ./IDs/*.json &> /dev/null
