@@ -1,62 +1,56 @@
 #!/bin/bash
 
+# parameters:
+# ${_ServerID} ${_ServerMap} ${_server_game_ini} ${_server_playerdata_folder}
+
+if [[ -z "$1" ]] 
+then
+	echo "1st parameter missing: ServerID"
+	exit 1
+else
+	_ServerID="$1";
+fi
+
+if [[ -z "$2" ]] 
+then
+	echo "2nd parameter missing: ServerMap"
+	exit 1
+else
+	_ServerMap="$2";
+fi
+
+if [[ -z "$3" ]] 
+then
+	echo "3rd parameter missing: Full path of game.ini"
+	exit 1
+else
+	_server_game_ini="$3";
+fi
+
+if [[ -z "$4" ]] 
+then
+	echo "4th parameter missing: Full path of Playerdata folder"
+	exit 1
+else
+	_server_playerdata_folder="$4";
+fi
+
+if [[ -z "$5" ]] 
+then
+	echo "5th parameter missing: boolean whether to update all players or only players who are currently playing on this server"
+	exit 1
+else
+	_updateAll="$5";
+fi
+
 ## fixed variables
 
 #(timestamp of milliseconds from 1970/01/01 00:00:00 UTC) conforms to the timestamp format that is required by vulnona we will grab this once for each update - no need to call data for every player json
 _UpdateEpoch=$(date +%s%N | cut -b1-13)
 
-# Supported The Isle Server versions
-_supported_versions="0.5.19.27 0.5.19.28 0.6.22.12 0.6.30.37"
-
-# get folder of The Isle server from config file:
-. ./TI-Nav-Collector.conf
-
-# the "Saved" folder
-_server_saved_folder="${_the_isle_server_folder}/TheIsle/Saved"
-
-# folder of the PlayerData 
-_server_playerdata_folder="${_server_saved_folder}/PlayerData"
-
-# folder of the server log
-_server_config_folder="${_server_saved_folder}/Config/WindowsServer"
-# server log
-_server_game_ini="${_server_config_folder}/Game.ini"
-
-# folder of the server log
-_server_log_folder="${_server_saved_folder}/Logs"
-# server log
-_server_log_file="${_server_log_folder}/TheIsle.log"
-
 # curl stuff
 _curl="curl -o curl.api_response -s -S --stderr curl.err -H \\\"Content-Type: application/json\\\" "
 _URL="https://ti-nav.net/api-bulk.php"
-
-# some of the following checks might fail / return empty on servers which have a high uptime (the TI server, not the OS). This is because the server.log files will be rotated and the lines I am gepping for only appear once during server start. So I might end up asking these from a config file - should be not much of a pain as server name, version & map are unlikly to change frequently.
-
-# check whether TI server runs a supported version - TI devs need to put this somewhere else, log files will rotate!
-_ServerVersion=$(egrep "ProjectVersion" "${_server_log_file}" | tail -n 1 | cut -d']' -f 3 | cut -d' ' -f 5 | tr -dc "[[:print:]]")
-for _version in ${_supported_versions}
-do
-	if [[ "${_ServerVersion%.}" = "${_version}" ]]
-	then
-		_OK=1
-	fi
-done
-if [[ ${_OK} -ne 1 ]]
-then
-	echo "Unsupported version of TI server: ${_ServerVersion%.}"
-	echo "exiting."
-	exit 1
-fi
-
-# get TI server STEAM IP - this changes every time the TI server is restarted. This is the hook to resend all player's json files every once in a while. 
-# ! The log file has some nasty DOS style characters so we need to strip these off before further processing this value:
-_server_ip=$(egrep "SteamP2P" "${_server_log_file}" | tail -n 1 | cut -d']' -f 3 | cut -d' ' -f 7 | tr -dc "[[:print:]]")
-_ServerID=${_server_ip/:/_}
-
-# get current running map. This is useless for atm, becasue there is only Isla_Spiro. But there might be other maps again in the near future. Again the TI devs should expose the currently running map somwhere else because log files are heavy to crawl and will rotate soone or later. An API or rcon would make much sense here.
-_currentmap=$(egrep "LoadMap" "${_server_log_file}" | tail -n 1 | cut -d'(' -f 2 | tr -d ")" | tr -dc "[[:print:]]")
-_ServerMap=${_currentmap##*/}
 
 # get TI server name
 _ServerName=$(awk -F "=" '/ServerName/ {print $2}' "${_server_game_ini}" | tr -dc "[[:print:]]")
@@ -70,7 +64,12 @@ _update_count=0
 _no_change_count=0
 
 # we find players who are currently online by checking which jsons have been modified wihtin then last 10 secs - TI server writes a json file for each player currently online every 10 secs:
-_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json' -mmin 0.17)"
+if [[ ${_updateAll} -eq "true"  ]]
+then
+	_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json')"
+else
+	_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json' -mmin 0.17)"
+fi
 
 # wc -l does not work if there is one singel player, so we need to grep for lines but not newlines
 _online_count=$(echo -n "${_OnlinePlayers}" | egrep -c '^')
