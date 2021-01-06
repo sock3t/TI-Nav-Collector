@@ -17,8 +17,8 @@ _json="${_userjson%%;*}";
 _ts="${_userjson##*;}";
 # remove the decimal dot
 _ts2="${_ts//./}";
-# remove the last digit
-_epoch="${_ts2:0:-1}";
+# provide ms precision which is 13 digits
+_epoch="${_ts2:0:13}";
 
 #########################
 ## prepare JSON according to TI-Nav API
