@@ -13,34 +13,50 @@ fi
 
 if [[ -z "$2" ]] 
 then
-	echo "2nd parameter missing: ServerMap"
+	echo "2nd parameter missing: ServerName"
 	exit 1
 else
-	_ServerMap="$2";
+	_ServerName="$2";
 fi
 
 if [[ -z "$3" ]] 
 then
-	echo "3rd parameter missing: Full path of game.ini"
+	echo "3rd parameter missing: ServerMap"
 	exit 1
 else
-	_server_game_ini="$3";
+	_ServerMap="$3";
 fi
+
+#if [[ -z "$3" ]] 
+#then
+#	echo "3rd parameter missing: Full path of game.ini"
+#	exit 1
+#else
+#	_server_game_ini="$3";
+#fi
 
 if [[ -z "$4" ]] 
 then
-	echo "4th parameter missing: Full path of Playerdata folder"
+	echo "4th parameter missing: ServerAdmins"
 	exit 1
 else
-	_server_playerdata_folder="$4";
+	_ServerAdmins="$4";
 fi
 
 if [[ -z "$5" ]] 
 then
-	echo "5th parameter missing: boolean whether to update all players or only players who are currently playing on this server"
+	echo "5th parameter missing: Full path of Playerdata folder"
 	exit 1
 else
-	_updateAll="$5";
+	_server_playerdata_folder="$5";
+fi
+
+if [[ -z "$6" ]] 
+then
+	echo "6th parameter missing: boolean whether to update all players or only players who are currently playing on this server"
+	exit 1
+else
+	_updateAll="$6";
 fi
 
 ## fixed variables
@@ -49,11 +65,8 @@ fi
 _curl="curl -o curl.api_response -s -S --stderr curl.err -H \\\"Content-Type: application/json\\\" "
 _URL="https://ti-nav.net/apis/api-bulk.php"
 
-# get TI server name
-_ServerName=$(awk -F "=" '/ServerName/ {print $2}' "${_server_game_ini}" | tr -dc "[[:print:]]")
-
 # get Server Admins SteamdIDs
-_ServerAdmins=$(awk -F "=" '/AdminsSteamIDs/ {print $2}' "${_server_game_ini}" | tr -d '\r')
+#_ServerAdmins=$(awk -F "=" '/AdminsSteamIDs/ {print $2}' "${_server_game_ini}" | tr -d '\r')
 
 # set up counters for basic stats
 _online_count=0
@@ -100,7 +113,7 @@ then
 	jo "Servers=$(jo -a "$(echo -n ${_Servers_json})")" "Admins=$(jo -a $(echo -n ${_Admins_json[@]}))" "Players=$(jo -a $(cat ./IDs/*.json))" > bulk.json
 	
 	# send the json to TI-Nav
-	eval echo ${_curl} -d @./bulk.json \\\"${_URL}\\\" | bash
+#	eval echo ${_curl} -d @./bulk.json \\\"${_URL}\\\" | bash
 fi
 # reporting
 _update_count=$(awk '$7==0' ./joblog | wc -l)

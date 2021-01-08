@@ -62,11 +62,12 @@ fi
 _DinoSpecies=$(jq -j '.Class' "${_json}")
 _HerdID=$(jq -j '.TargetingTeamId' "${_json}")
 _Growth=$(jq -j '.Growth' "${_json}")
+_Health=$(jq -j '.Health' "${_json}")
 _Stamina=$(jq -j '.Stamina' "${_json}")
 _Hunger=$(jq -j '.Hunger' "${_json}")
 _Thirst=$(jq -j '.Thirst' "${_json}")
 
 # write json file for player
-jo -- -s SteamID="${_SteamID}" -s UpdateEpoch="${_epoch}" -s DinoSpecies="${_DinoSpecies}" -s Coordinates="${_Coordinates}" -s Yaw="${_Yaw}" -s HerdID="${_HerdID}" -s Growth="${_Growth}" -s Stamina="${_Stamina}" -s Hunger="${_Hunger}" -s Thirst="${_Thirst}" > ./IDs/${_SteamID}.json
+jo -- -s SteamID="${_SteamID}" -s UpdateEpoch="${_epoch}" -s DinoSpecies="${_DinoSpecies}" -s Coordinates="${_Coordinates}" -s Yaw="${_Yaw}" -s HerdID="${_HerdID}" -s Growth="${_Growth}" -s Health="${_Health}" -s Stamina="${_Stamina}" -s Hunger="${_Hunger}" -s Thirst="${_Thirst}" > ./IDs/${_SteamID}.json
 
 echo -n "${_Coordinates}" > ./IDs/${_SteamID}.lastcoord

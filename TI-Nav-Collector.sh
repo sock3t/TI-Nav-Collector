@@ -52,16 +52,21 @@ crawlServerLog () {
 	fi
 	
 	# get TI server STEAM IP - this changes every time the TI server is restarted. This is the hook to resend all player's json files every once in a while. 
-	_server_ip=$(egrep "SteamP2P" "${_server_log_file}" | tail -n 1 | cut -d']' -f 3 | cut -d' ' -f 7 | tr -dc "[[:print:]]")
-	_ServerID=${_server_ip/:/_}
+	#
+	# we use hash of server name for ServerID from now on
+	#_server_ip=$(egrep "SteamP2P" "${_server_log_file}" | tail -n 1 | cut -d']' -f 3 | cut -d' ' -f 7 | tr -dc "[[:print:]]")
+	#_ServerID=${_server_ip/:/_}
 	
 	# Get current running map:
 	# This is useless atm, becasue there is only Isla_Spiro.
 	# But there might be other maps again in the near future.
 	# Like with the SteamP2P the TI devs should expose the currently running map somwhere else because log files are heavy to crawl and will rotate sooner or later.
 	# An API or rcon would make much sense here.
-	_currentmap=$(egrep "LoadMap" "${_server_log_file}" | tail -n 1 | cut -d'(' -f 2 | tr -d ")" | tr -dc "[[:print:]]")
-	_ServerMap=${_currentmap##*/}
+	#
+	# let's hardcode this for now - less server log crawling
+	#_currentmap=$(egrep "LoadMap" "${_server_log_file}" | tail -n 1 | cut -d'(' -f 2 | tr -d ")" | tr -dc "[[:print:]]")
+	#_ServerMap=${_currentmap##*/}
+	_ServerMap="Isla_Spiro"
 	#
 	#########
 }
@@ -69,11 +74,20 @@ crawlServerLog () {
 findRecentLogBackup () {
 	_RecentLogBackup="$(find "${_server_log_folder}" -maxdepth 1 -quit -type f -iname 'TheIsle-backup-*' -mmin 0.5)"
 }
+crawlGameIni () {
+	# get TI server name
+	_ServerName=$(awk -F "=" '/ServerName/ {print $2}' "${_server_game_ini}" | tr -dc "[[:print:]]")
+	_ServerID=$(echo -n ${_ServerName} | b2sum | cut -b 1-19)
+	
+	# get Server Admins SteamdIDs
+	_ServerAdmins="$(awk -F "=" '/AdminsSteamIDs/ {print $2}' "${_server_game_ini}" | tr -d '\r')"
+}
 
 # crawl the server logs once at first start
 crawlServerLog
+crawlGameIni
 echo "Initial update syncs all known players to TI-Nav..."
-./TINC-send.sh "${_ServerID}" "${_ServerMap}" "${_server_game_ini}" "${_server_playerdata_folder}" true
+./TINC-send.sh "${_ServerID}" "${_ServerName}" "${_ServerMap}" "${_ServerAdmins}" "${_server_playerdata_folder}" "true"
 
 while true
 do
@@ -85,12 +99,13 @@ do
 	if [[ -n "${_RecentLogBackup}"  ]]
 	then
 		crawlServerLog
+		crawlGameIni
 		echo -n "Log rotation detected... "
 		date
 		echo "Next update will sync all known players to TI-Nav"
-		./TINC-send.sh "${_ServerID}" "${_ServerMap}" "${_server_game_ini}" "${_server_playerdata_folder}" "true"
+		./TINC-send.sh "${_ServerID}" "${_ServerName}" "${_ServerMap}" "${_ServerAdmins}" "${_server_playerdata_folder}" "true"
 	else
-		./TINC-send.sh "${_ServerID}" "${_ServerMap}" "${_server_game_ini}" "${_server_playerdata_folder}" "false"
+		./TINC-send.sh "${_ServerID}" "${_ServerName}" "${_ServerMap}" "${_ServerAdmins}" "${_server_playerdata_folder}" "false"
 	fi
 	echo "waiting for next run ..."
 	echo
