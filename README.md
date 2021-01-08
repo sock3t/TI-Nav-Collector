@@ -36,6 +36,7 @@ Windows Subsystem for Linux (WSL) is rather new so I provide guidance how to ins
 * Set the path to your TI server
   * the "C" drive of your Windows system is mounted in Debian by default under `/mnt/c`
   * adjust the config parameter in `TI-Nav-Collector.conf` accordingly
+  * this command can help to find the path: `find /mnt/c/ -name "The Isle Dedicated Server" 2> /dev/null` 
 * Run TI-Nav-Collector
   * `./TI-Nav-Collector.sh`
   * will only execute if there are players online on the server
