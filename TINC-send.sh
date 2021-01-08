@@ -113,7 +113,7 @@ then
 	jo "Servers=$(jo -a "$(echo -n ${_Servers_json})")" "Admins=$(jo -a $(echo -n ${_Admins_json[@]}))" "Players=$(jo -a $(cat ./IDs/*.json))" > bulk.json
 	
 	# send the json to TI-Nav
-#	eval echo ${_curl} -d @./bulk.json \\\"${_URL}\\\" | bash
+	eval echo ${_curl} -d @./bulk.json \\\"${_URL}\\\" | bash
 fi
 # reporting
 _update_count=$(awk '$7==0' ./joblog | wc -l)
