@@ -77,7 +77,8 @@ findRecentLogBackup () {
 crawlGameIni () {
 	# get TI server name
 	_ServerName=$(awk -F "=" '/ServerName/ {print $2}' "${_server_game_ini}" | tr -dc "[[:print:]]")
-	_ServerID=$(echo -n ${_ServerName} | b2sum | cut -b 1-19)
+	# ServerID should be safely unique to never have a colision: 16 (hex) to the power of 6 allows more than 16 million combinations - as of 2021 I don't assume that there will be more than 1000 TI servers in the near future. So 6 chars should be plenty of head room :)
+	_ServerID="$(echo -n ${_ServerName} | b2sum | cut -b 1-6)"
 	
 	# get Server Admins SteamdIDs
 	_ServerAdmins="$(awk -F "=" '/AdminsSteamIDs/ {print $2}' "${_server_game_ini}" | tr -d '\r')"
