@@ -13,60 +13,44 @@ fi
 
 if [[ -z "$2" ]] 
 then
-	echo "2nd parameter missing: ServerName"
+	echo "2nd parameter missing: ServerSecretID"
 	exit 1
 else
-	_ServerName="$2";
+	_ServerSecretID="$2";
 fi
 
 if [[ -z "$3" ]] 
 then
-	echo "3rd parameter missing: ServerMap"
+	echo "3rd parameter missing: ServerAdmins"
 	exit 1
 else
-	_ServerMap="$3";
+	_ServerAdmins="$3";
 fi
-
-#if [[ -z "$3" ]] 
-#then
-#	echo "3rd parameter missing: Full path of game.ini"
-#	exit 1
-#else
-#	_server_game_ini="$3";
-#fi
 
 if [[ -z "$4" ]] 
 then
-	echo "4th parameter missing: ServerAdmins"
+	echo "4th parameter missing: Full path of Playerdata folder"
 	exit 1
 else
-	_ServerAdmins="$4";
+	_server_playerdata_folder="$4";
 fi
 
 if [[ -z "$5" ]] 
 then
-	echo "5th parameter missing: Full path of Playerdata folder"
+	echo "5th parameter missing: boolean whether to update all players or only players who are currently playing on this server"
 	exit 1
 else
-	_server_playerdata_folder="$5";
-fi
-
-if [[ -z "$6" ]] 
-then
-	echo "6th parameter missing: boolean whether to update all players or only players who are currently playing on this server"
-	exit 1
-else
-	_updateAll="$6";
+	_updateAll="$5";
 fi
 
 ## fixed variables
 
 # curl stuff
-_curl="curl -o curl.api_response -s -S --stderr curl.err -H \\\"Content-Type: application/json\\\" "
-_URL="https://ti-nav.net/apis/api-bulk.php"
-
-# get Server Admins SteamdIDs
-#_ServerAdmins=$(awk -F "=" '/AdminsSteamIDs/ {print $2}' "${_server_game_ini}" | tr -d '\r')
+_curl="curl -o curl.api_response -s -S --stderr curl.err -H \'Content-Type: application/json\' -H \'X-TINav-ServerID: ${_ServerID}\' -H \'X-TINav-ServerSecretID: ${_ServerSecretID}\'"
+# During ALPHA testing the URL will be a unique string
+# TI server owners have to introduce themselves before they can take part in the ALPHA:
+# https://github.com/sock3t/TI-Nav-Collector/discussions?discussions_q=category%3A%22Join+ALPHA+Testing%22
+_URL="https://ti-nav.net/apis/server-push-api.php"
 
 # set up counters for basic stats
 _online_count=0
@@ -91,7 +75,7 @@ else
 	rm ./IDs/*.json &> /dev/null
 fi
 
-# wc -l does not work if there is one singel player, so we need to grep for lines but not newlines
+# wc -l does not work if there is one single player, so we need to grep for lines but not newlines
 _online_count=$(echo -n "${_OnlinePlayers}" | egrep -c '^')
 
 # create IDs folder if needed
@@ -103,14 +87,12 @@ echo -n "${_OnlinePlayers}" | egrep -v "^$" | parallel -j 6 --joblog ./joblog ".
 # send the bulk update only if we have any player json - there might be players on the server but no one moved.
 if ls ./IDs/*.json &> /dev/null
 then
-	_Servers_json="$(jo -- -s ServerID="${_ServerID}" -s ServerName="${_ServerName}" -s ServerMap="${_ServerMap}")"
 	for _admin in ${_ServerAdmins}
 	do
 		_Admins_json+=("$(jo -- -s SteamID="${_admin}")")
 	done
 	
-	#jo -p "Servers=$(jo -a "$(echo ${_Servers_json})")" "Admins=$(jo -a "$(echo ${_Admins_json})")" "Players=$(jo -a $(cat ./IDs/*.json))"
-	jo "Servers=$(jo -a "$(echo -n ${_Servers_json})")" "Admins=$(jo -a $(echo -n ${_Admins_json[@]}))" "Players=$(jo -a $(cat ./IDs/*.json))" > bulk.json
+	jo "Admins=$(jo -a $(echo -n ${_Admins_json[@]}))" "Players=$(jo -a $(cat ./IDs/*.json))" > bulk.json
 	
 	# send the json to TI-Nav
 	eval echo ${_curl} -d @./bulk.json \\\"${_URL}\\\" | bash
