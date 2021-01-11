@@ -59,9 +59,9 @@ _no_change_count=0
 
 if [[ "${_updateAll}" = "true"  ]]
 then
-	# list all player json files for full sync
+	# list all player json files for full sync - this allows players to find their "save-games" on various server via TI-Nav
 	# +
-	#(timestamp of milliseconds from 1970/01/01 00:00:00 UTC) conforms to the timestamp format that is required by vulnona
+	#(timestamp in millisecond precision from 1970/01/01 00:00:00 UTC) conforms to the timestamp format that is required by vulnona
 	#_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json')"
 	_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json' -printf '%p;%T@\n')"
 	# make sure they get all incl. in the bulk.json
@@ -69,7 +69,7 @@ then
 else
 	# find players who are currently online by checking which jsons have been modified wihtin then last 10 secs - TI server writes a json file for each player currently online every 10 secs
 	# +
-	#(timestamp of milliseconds from 1970/01/01 00:00:00 UTC) conforms to the timestamp format that is required by vulnona
+	#(timestamp in millisecond precision from 1970/01/01 00:00:00 UTC) conforms to the timestamp format that is required by vulnona
 	_OnlinePlayers="$(find "${_server_playerdata_folder}" -type f -regextype posix-extended -regex '.*/[0-9]{17}.json' -mmin 0.17 -printf '%p;%T@\n')"
 	# delete all temporary json files from last run
 	rm ./IDs/*.json &> /dev/null
@@ -99,5 +99,10 @@ then
 fi
 # reporting
 _update_count=$(awk '$7==0' ./joblog | wc -l)
-_no_change_count=$(awk '$7==2' ./joblog | wc -l)
-echo "${_online_count} online players / ${_update_count} updated / ${_no_change_count} ignored due to no coordinate change"
+####
+#_no_change_count=$(awk '$7==2' ./joblog | wc -l)
+#echo "${_online_count} online players / ${_update_count} updated / ${_no_change_count} ignored due to no coordinate change"
+##
+## ^^ this is obsolete for now. Read more details about the check of changed coordinates in TINC-player.sh.
+####
+echo "${_online_count} online players / ${_update_count} updated"

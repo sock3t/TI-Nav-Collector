@@ -1,5 +1,5 @@
 #!/bin/bash
-# simple endless loop to update coordinates of player to vulnona:
+# endless loop to push player properties to TI-Nav:
 
 # Supported The Isle Server versions
 _supported_versions="0.5.19.27 0.5.19.28 0.6.22.12 0.6.30.37"
