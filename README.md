@@ -3,9 +3,9 @@
 **Note:**
 _This tool is not yet public available. If you are interested in providing map / navigation functionality to your The Isle server then please introduce yourself in [Discussion's Join ALPHA Testing Category](https://github.com/sock3t/TI-Nav-Collector/discussions?discussions_q=category%3A%22Join+ALPHA+Testing%22)_
 
-Collector script that pulls player data from a The Isle server and sends it to [TI-Nav](https://ti-nav.de)
+Collector script that pulls player data from a The Isle server and sends it to [TI-Nav](https://ti-nav.net)
 This will allow any player on that TI server to track her/his own postion on a map.
-[TI-Nav](https://ti-nav.de) also allows players to share their position with other players.
+[TI-Nav](https://ti-nav.net) also allows players to share their position with other players.
 
 This script is based on bash and a set of GNU tools. So a linux environment will be required to run it on a windows OS based system.
 Cygwin might work, but I have not tested it.
