@@ -39,5 +39,8 @@ Windows Subsystem for Linux (WSL) is rather new so I provide guidance how to ins
   * this command can help to find the path: `find /mnt/c/ -name "The Isle Dedicated Server" 2> /dev/null` 
 * Run TI-Nav-Collector
   * `./TI-Nav-Collector.sh`
-  * will only execute if there are players online on the server
-  * executes every ~10 seconds
+  * Initial server registration will take place and display some information about your TI server
+    * copy this information and share it in [Discussion's Join ALPHA Testing Category](https://github.com/sock3t/TI-Nav-Collector/discussions?discussions_q=category%3A%22Join+ALPHA+Testing%22)
+  * The Collector will do an initial sync everytime it is started
+  * Once the Collector is running it will only execute if there are players online on the server
+  * The Isle servers update player coordinates and other parameters roughly every ~10 seconds, so this is how often the Collector will loop through that data and send it to TI-Nav
