@@ -1,11 +1,12 @@
 # TI-Nav-Collector
 
 **Note:**
-_This tool is not yet public available. If you are interested in providing map / navigation functionality to your The Isle server then please introduce yourself in [Discussion's Join ALPHA Testing Category](https://github.com/sock3t/TI-Nav-Collector/discussions?discussions_q=category%3A%22Join+ALPHA+Testing%22)_
+_This tool is public available but a registration is required. If you are interested in providing map / navigation functionality to your The Isle server then please follow the Install and Running instructions. During the initial run of the tool it will guide you to introduce yourself (or more precisely your TI server) in [Discussion's Join ALPHA Testing Category](https://github.com/sock3t/TI-Nav-Collector/discussions?discussions_q=category%3A%22Join+ALPHA+Testing%22)_
 
-Collector script that pulls player data from a The Isle server and sends it to [TI-Nav](https://ti-nav.net)
-This will allow any player on that TI server to track her/his own postion on a map.
-[TI-Nav](https://ti-nav.net) also allows players to share their position with other players.
+# What is TI-Nav-Collector
+The TI-Nav-Collector script collects player data on a The Isle server and sends it to [TI-Nav](https://ti-nav.net)
+This will allow any player who plays on that TI server to track her/his own postion on the map.
+[TI-Nav](https://ti-nav.net) also allows players to share their position with other players who are playing on the same TI server.
 
 This script is based on bash and a set of GNU tools. So a linux environment will be required to run it on a windows OS based system.
 Cygwin might work, but I have not tested it.
@@ -39,7 +40,7 @@ Windows Subsystem for Linux (WSL) is rather new so I provide guidance how to ins
   * this command can help to find the path: `find /mnt/c/ -name "The Isle Dedicated Server" 2> /dev/null` 
 * Run TI-Nav-Collector
   * `./TI-Nav-Collector.sh`
-  * Initial server registration will take place and display some information about your TI server
+  * Initial server registration will take place and some information about your TI server will be shown
     * copy this information and share it in [Discussion's Join ALPHA Testing Category](https://github.com/sock3t/TI-Nav-Collector/discussions?discussions_q=category%3A%22Join+ALPHA+Testing%22)
   * The Collector will do an initial sync everytime it is started
   * Once the Collector is running it will only execute if there are players online on the server
