@@ -17,14 +17,15 @@ Windows Subsystem for Linux (WSL) is rather new so I provide guidance how to ins
 * Enable WSL & install Debian
   * [WSL Documentation](https://docs.microsoft.com/en-us/windows/wsl/)
   * depending on your OS click on "Quickstart" and choose:
-    * **Windows 10**: "Install WSL & update to WSL 2"
+    * **Windows 10**: "Install WSL 1"
     * **Windows Server**: "Install on Windows Server"
 * Start debian
   * **Windows 10**: go to "Install required packages"
   * **Windows Server**:
     * Upgrade the Debian from 9 to 10
       * `sudo sed -i -e 's/stretch/buster/' /etc/apt/sources.list`
-      * `echo "apt update && apt upgrade -y && apt full-upgrade -y && apt autoremove -y && apt clean -y && apt auto-clean -y" | sudo -i`
+      * `sudo apt update && sudo apt upgrade -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean -y && sudo apt auto-clean -y`
+      * the installer will pop up a message once asking whether you want to have service restarted automatically - please answer yes
 * Install required packages
   * `sudo apt install -y inotify-tools gawk sed jo jq curl git parallel`
   * Optional packages: `sudo apt install -y vim psmisc man`
