@@ -8,6 +8,8 @@ The TI-Nav-Collector script collects player data on a The Isle server and sends 
 This will allow any player who plays on that TI server to track her/his own postion on the map.
 [TI-Nav](https://ti-nav.net) also allows players to share their position with other players who are playing on the same TI server.
 
+For more details about how it works and an introduction to all features go here: [TI-Nav Guide on Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=2372606078)
+
 This script is based on bash and a set of GNU tools. So a linux environment will be required to run it on a windows OS based system.
 Cygwin might work, but I have not tested it.
 Windows Subsystem for Linux (WSL) is rather new so I provide guidance how to install it below.
