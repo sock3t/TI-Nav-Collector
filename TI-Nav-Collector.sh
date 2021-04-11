@@ -16,6 +16,8 @@ _server_saved_folder="${_the_isle_server_folder}/TheIsle/Saved"
 
 # folder of the PlayerData 
 _server_playerdata_folder="${_server_saved_folder}/PlayerData"
+# create the folder in case it does not exist yet - new servers don't have that folder until the first user joins
+mkdir -p "${_server_playerdata_folder}"
 
 # folder of the server log
 _server_config_folder="${_server_saved_folder}/Config/WindowsServer"
@@ -26,9 +28,6 @@ _server_game_ini="${_server_config_folder}/Game.ini"
 _server_log_folder="${_server_saved_folder}/Logs"
 # server log
 _server_log_file="${_server_log_folder}/TheIsle.log"
-
-# folder of the PlayerData 
-_playerdata="${_the_isle_server_folder}/TheIsle/Saved/PlayerData/"
 
 crawlServerLog () {
 	#########
@@ -217,19 +216,20 @@ echo "Initial update syncs all known players to TI-Nav..."
 
 while true
 do
-	inotifywait -qq "${_playerdata}"
+	inotifywait -qq "${_server_playerdata_folder}"
+	# slow down for a fraction of a sec to allow the FS layer to finish the write operation
 	sleep .2
 	
 	# crawl the server logs only if the log rotates
 	findRecentLogBackup
 	if [[ -n "${_RecentLogBackup}"  ]]
 	then
-		crawlServerLog
-		crawlGameIni
-		CheckAPIAccess
 		echo -n "Log rotation detected... "
 		date
 		echo "Next update will sync all known players to TI-Nav"
+		crawlServerLog
+		crawlGameIni
+		CheckAPIAccess
 		./TINC-send.sh "${_ServerID}" "${_ServerSecretID}" "${_ServerAdmins}" "${_server_playerdata_folder}" "true"
 	else
 		crawlGameIni
