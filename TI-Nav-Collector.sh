@@ -2,7 +2,7 @@
 # endless loop to push player properties to TI-Nav:
 
 # Supported The Isle Server versions
-_supported_versions="0.5.19.27 0.5.19.28 0.6.22.12 0.6.30.37 0.6.48.29" 
+_supported_versions="0.5.19.27 0.5.19.28 0.6.22.12 0.6.30.37 0.6.48.29 0.7.85.04" 
 
 # get folder of The Isle server from config file:
 _config="./TI-Nav-Collector.conf"
